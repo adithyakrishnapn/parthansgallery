@@ -10,15 +10,23 @@
   font-family: sans-serif;
   background-color: rgb(33, 33, 33);
   border-radius: 0.2cm;
+  color: white;
 }
+
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #555;
   padding-bottom: 15px;
   margin-bottom: 20px;
 }
+
+.dashboard-header h1 {
+  color: white;
+  margin: 0;
+}
+
 .logout-btn {
   background-color: #dc3545;
   color: white;
@@ -26,15 +34,22 @@
   padding: 8px 15px;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #c82333;
 }
 
 /* Navigation Tabs */
 .dashboard-nav {
   margin-bottom: 20px;
-  border-bottom: 2px solid #eee;
-  overflow-x: auto; /* Allows tabs to be scrollable on small screens */
+  border-bottom: 2px solid #555;
+  overflow-x: auto;
   background-color: rgb(255, 204, 0);
+  border-radius: 8px;
 }
+
 .dashboard-nav button {
   background: none;
   border: none;
@@ -42,29 +57,41 @@
   cursor: pointer;
   font-size: 16px;
   border-bottom: 2px solid transparent;
-  white-space: nowrap; /* Prevents tab text from wrapping */
+  white-space: nowrap;
+  color: #333;
+  transition: all 0.3s;
 }
+
 .dashboard-nav button.active {
   border-bottom-color: #007bff;
   color: #007bff;
   font-weight: bold;
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.dashboard-nav button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 /* Tab Content */
 .tab-content h3 {
   margin-top: 0;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #555;
   padding-bottom: 10px;
   margin-bottom: 20px;
+  color: white;
 }
 
+.tab-content p {
+  color: #ccc;
+}
 
 .form-section {
   display: flex;
-  flex-direction: column; /* MOBILE FIRST: Stack elements vertically by default */
-  align-items: stretch; /* Make inputs take the full container width */
-  gap: 15px; /* Add some vertical space between stacked elements */
-  background: #f9f9f9;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 15px;
+  background: #444;
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 30px;
@@ -73,9 +100,14 @@
 .form-section input[type="text"],
 .form-section select {
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #666;
   border-radius: 4px;
-  /* width: 100%; /* No need for width if align-items is stretch */
+  background-color: #555;
+  color: white;
+}
+
+.form-section input[type="text"]::placeholder {
+  color: #aaa;
 }
 
 .form-section button {
@@ -85,40 +117,254 @@
   padding: 10px 15px;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-/* On screens 768px wide or larger (tablets and desktops), switch to a row layout */
+.form-section button:hover {
+  background-color: #218838;
+}
+
+/* On screens 768px wide or larger */
 @media (min-width: 768px) {
   .form-section {
-    flex-direction: row; /* Align main form items horizontally on desktop */
+    flex-direction: row;
     align-items: center;
   }
 
-  /* The portfolio uploader specifically will be a row and take up remaining space */
   .portfolio-uploader {
-    flex-direction: row; /* Make the file input and button horizontal */
-    flex-grow: 1;        /* Allow it to take up available space */
-    justify-content: flex-end; /* Align to the right */
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: flex-end;
   }
 }
-/* ==================================================================== */
 
 /* Image Uploader Component */
-.image-uploader input[type="file"] {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 5px;
+.image-uploader {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-/* Grid for Items (This CSS is already responsive!) */
+.image-uploader input[type="file"] {
+  border: 1px solid #666;
+  border-radius: 4px;
+  padding: 8px;
+  background-color: #555;
+  color: white;
+}
+
+.image-uploader button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.image-uploader button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.image-uploader button:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+}
+
+/* Multiple Image Uploader */
+.multiple-image-uploader {
+  border: 2px dashed #666;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 10px 0;
+  background-color: #3a3a3a;
+}
+
+.multiple-image-uploader input[type="file"] {
+  margin-bottom: 15px;
+  padding: 8px;
+  border: 1px solid #666;
+  border-radius: 4px;
+  background-color: #555;
+  color: white;
+  width: 100%;
+}
+
+.selected-images-info {
+  margin: 15px 0;
+  padding: 10px;
+  background-color: #2c5282;
+  border-radius: 4px;
+  border-left: 4px solid #3182ce;
+}
+
+.selected-images-info p {
+  margin: 0 0 8px 0;
+  font-weight: bold;
+  color: #90cdf4;
+}
+
+.image-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.image-name {
+  background-color: #555;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  border: 1px solid #666;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-multiple-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.upload-multiple-btn:hover:not(:disabled) {
+  background-color: #45a049;
+}
+
+.upload-multiple-btn:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+}
+
+.upload-progress {
+  width: 100%;
+  height: 6px;
+  background-color: #555;
+  border-radius: 3px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #4CAF50;
+  transition: width 0.3s ease;
+  border-radius: 3px;
+}
+
+.divider {
+  text-align: center;
+  margin: 20px 0;
+  position: relative;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #666;
+  z-index: 1;
+}
+
+.divider span {
+  background-color: #444;
+  padding: 0 15px;
+  color: #ccc;
+  font-weight: bold;
+  position: relative;
+  z-index: 2;
+}
+
+.upload-section {
+  background-color: #3a3a3a;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 15px 0;
+}
+
+.upload-section h4 {
+  margin-top: 0;
+  color: white;
+  border-bottom: 2px solid #4CAF50;
+  padding-bottom: 8px;
+  display: inline-block;
+}
+
+.category-selection {
+  margin-bottom: 15px;
+}
+
+.category-selection label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: white;
+}
+
+.category-selection select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #666;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #555;
+  color: white;
+}
+
+.title-options {
+  margin: 15px 0;
+  padding: 15px;
+  background-color: #555;
+  border-radius: 6px;
+  border: 1px solid #666;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: normal;
+  color: white;
+}
+
+.checkbox-label input[type="checkbox"] {
+  margin-right: 8px;
+  transform: scale(1.1);
+}
+
+.manual-title {
+  margin-top: 10px;
+}
+
+.manual-title input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #666;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #555;
+  color: white;
+}
+
+/* Grid for Items */
 .items-grid {
   display: grid;
-  /* On small phones, show 2 columns instead of just one if they fit */
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 15px;
 }
 
-/* On larger screens, the items can be wider */
 @media (min-width: 768px) {
   .items-grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -127,14 +373,24 @@
 }
 
 .item-card {
-  border: 1px solid #ddd;
+  border: 1px solid #666;
   border-radius: 8px;
   padding: 10px;
   text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  background-color: #444;
 }
+
+.item-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
 .item-card img {
   width: 100%;
   height: 150px;
@@ -194,4 +450,65 @@
   border-radius: 0.25rem;
   text-align: center;
   margin-bottom: 30px;
+}
+
+/* --- Cropper Modal Styles --- */
+.cropper-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.cropper-modal-content {
+  background-color: #333; /* Dark background for the modal */
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.cropper-modal-content h3 {
+  margin-top: 0;
+  color: white;
+  text-align: center;
+}
+
+.ReactCrop__image {
+  max-height: 60vh; /* Limit the height of the image preview */
+}
+
+.cropper-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  border-top: 1px solid #555;
+  padding-top: 15px;
+}
+
+.cropper-modal-actions button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.cropper-modal-actions .cancel-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.cropper-modal-actions button:not(.cancel-btn) {
+  background-color: #007bff;
+  color: white;
 }

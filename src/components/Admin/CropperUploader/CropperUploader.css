@@ -1,0 +1,90 @@
+/* Container for just the file input button */
+.cropper-uploader-container {
+    width: 100%;
+}
+
+.cropper-uploader-container input[type="file"] {
+  border: 1px solid #666;
+  border-radius: 4px;
+  padding: 8px;
+  background-color: #555;
+  color: white;
+  width: 100%;
+}
+
+/* Cropper Modal Styles */
+.cropper-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.cropper-modal-content {
+  background-color: #3a3a3a;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.cropper-modal-content h3 {
+  margin-top: 0;
+  color: white;
+  text-align: center;
+}
+
+.crop-preview-wrapper {
+    display: flex;
+    justify-content: center;
+    background-color: #222;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.react-cropper img {
+  max-height: 65vh; /* Limit the height of the image preview */
+}
+
+.cropper-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  border-top: 1px solid #555;
+  padding-top: 15px;
+}
+
+.cropper-modal-actions button {
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.cropper-modal-actions .cancel-btn {
+  background-color: #6c757d;
+  color: white;
+}
+.cropper-modal-actions .cancel-btn:hover {
+  background-color: #5a6268;
+}
+
+.cropper-modal-actions button:not(.cancel-btn) {
+  background-color: #007bff;
+  color: white;
+}
+.cropper-modal-actions button:not(.cancel-btn):hover {
+  background-color: #0056b3;
+}

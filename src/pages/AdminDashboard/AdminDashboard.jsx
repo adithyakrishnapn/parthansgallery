@@ -14,6 +14,8 @@ import { db, auth } from "../../config/firebaseconfig";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import "./AdminDashboard.css";
+import CropperUploader from "../../components/Admin/CropperUploader/CropperUploader";
+import MultipleImageUploader from "../../components/Admin/MultipleImageUploader/MultipleImageUploader";
 
 // --- Reusable Image Upload Component ---
 const ImageUploader = ({ onUpload, folderName }) => {
@@ -30,14 +32,14 @@ const ImageUploader = ({ onUpload, folderName }) => {
     const formData = new FormData();
     formData.append("file", image);
     formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-    formData.append("folder", folderName); // Organize in Cloudinary
+    formData.append("folder", folderName);
 
     try {
       const response = await axios.post(
         `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
         formData
       );
-      onUpload(response.data); // Pass the full Cloudinary response back
+      onUpload(response.data);
     } catch (error) {
       console.error("Cloudinary upload failed:", error);
     } finally {
@@ -66,6 +68,7 @@ const AdminDashboard = () => {
   const [portfolioTitle, setPortfolioTitle] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const [featuredImages, setFeaturedImages] = useState([]);
+  const [useAutoTitles, setUseAutoTitles] = useState(true);
 
   // State for Category Management
   const [categories, setCategories] = useState([]);
@@ -94,7 +97,7 @@ const AdminDashboard = () => {
       const cats = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
       setCategories(cats);
       if (cats.length > 0 && !selectedCategoryId) {
-        setSelectedCategoryId(cats[0].id); // Default to first category
+        setSelectedCategoryId(cats[0].id);
       }
     });
 
@@ -123,7 +126,6 @@ const AdminDashboard = () => {
     });
 
     return () => {
-      // Cleanup listeners on unmount
       unsubPortfolio();
       unsubCategories();
       unsubLander();
@@ -156,25 +158,74 @@ const AdminDashboard = () => {
     }
   };
 
-  // Portfolio Handlers
-  const handlePortfolioUpload = async (cloudinaryResponse) => {
-    if (!portfolioTitle || !selectedCategoryId) {
-      alert("Please enter a title and select a category.");
+  // Portfolio Handlers - Updated for multiple images
+  const handleMultiplePortfolioUpload = async (cloudinaryResponses) => {
+    if (!selectedCategoryId) {
+      alert("Please select a category.");
       return;
     }
+
     const selectedCategory = categories.find(
       (c) => c.id === selectedCategoryId
     );
+
+    try {
+      // Using a Firestore batch write for efficiency
+      const batch = writeBatch(db);
+
+      cloudinaryResponses.forEach((response, index) => {
+        const newDocRef = doc(collection(db, "portfolio"));
+        const title = useAutoTitles
+          ? `Image ${portfolioItems.length + index + 1}`
+          : portfolioTitle || `Image ${portfolioItems.length + index + 1}`;
+
+        batch.set(newDocRef, {
+          title: title,
+          categoryId: selectedCategoryId,
+          categoryName: selectedCategory.name,
+          imageUrl: response.secure_url,
+          publicId: response.public_id,
+          createdAt: new Date(),
+        });
+      });
+
+      await batch.commit();
+      setPortfolioTitle("");
+      alert(
+        `Successfully uploaded and saved ${cloudinaryResponses.length} images!`
+      );
+    } catch (error) {
+      console.error("Error saving portfolio items in batch:", error);
+      alert("Error saving portfolio items. Please try again.");
+    }
+  };
+
+  // Single image upload handler
+  const handlePortfolioUpload = async (cloudinaryResponse) => {
+    if (!selectedCategoryId) {
+      alert("Please select a category.");
+      return;
+    }
+
+    const title = useAutoTitles
+      ? `Image ${portfolioItems.length + 1}`
+      : portfolioTitle || `Image ${portfolioItems.length + 1}`;
+
+    const selectedCategory = categories.find(
+      (c) => c.id === selectedCategoryId
+    );
+
     await addDoc(collection(db, "portfolio"), {
-      title: portfolioTitle,
+      title: title,
       categoryId: selectedCategoryId,
-      categoryName: selectedCategory.name, // Denormalize for easier display
+      categoryName: selectedCategory.name,
       imageUrl: cloudinaryResponse.secure_url,
-      publicId: cloudinaryResponse.public_id, // For potential future deletion
+      publicId: cloudinaryResponse.public_id,
       createdAt: new Date(),
     });
     setPortfolioTitle("");
   };
+
   const handleDeletePortfolioItem = async (id) => {
     if (
       window.confirm("Are you sure you want to delete this portfolio item?")
@@ -205,12 +256,10 @@ const AdminDashboard = () => {
       await deleteDoc(doc(db, "siteContent", "profileImage"));
   };
 
-  // --- HANDLERS for Featured Slider Images ---
+  // Featured Slider Images Handlers
   const handleFeaturedUpload = async (cloudinaryResponse) => {
     if (featuredImages.length >= 5) {
-      alert(
-        "You can only have a maximum of 5 featured images. Please delete one before adding another."
-      );
+      alert("You can only have a maximum of 5 featured images.");
       return;
     }
     await addDoc(collection(db, "featuredImages"), {
@@ -234,45 +283,53 @@ const AdminDashboard = () => {
       case "portfolio":
         return (
           <div className="tab-content">
-            <h3>Upload New Portfolio Item</h3>
-            <div className="form-section">
-              <input
-                type="text"
-                placeholder="Item Title"
-                value={portfolioTitle}
-                onChange={(e) => setPortfolioTitle(e.target.value)}
-              />
-              <select
-                value={selectedCategoryId}
-                onChange={(e) => setSelectedCategoryId(e.target.value)}
-              >
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-              <ImageUploader
-                onUpload={handlePortfolioUpload}
+            <h3>Upload Portfolio Items</h3>
+            <div className="form-section column-layout">
+              {" "}
+              {/* Added a helper class for styling */}
+              <div className="category-selection">
+                <label>Select Category:</label>
+                <select
+                  value={selectedCategoryId}
+                  onChange={(e) => setSelectedCategoryId(e.target.value)}
+                >
+                  <option value="">Choose a category</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="title-options">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={useAutoTitles}
+                    onChange={(e) => setUseAutoTitles(e.target.checked)}
+                  />
+                  Use automatic numbering for titles
+                </label>
+              </div>
+              {!useAutoTitles && (
+                <div className="manual-title">
+                  <input
+                    type="text"
+                    placeholder="Custom base title for all images"
+                    value={portfolioTitle}
+                    onChange={(e) => setPortfolioTitle(e.target.value)}
+                  />
+                </div>
+              )}
+              {/* --- USE THE NEW COMPONENT HERE --- */}
+              <MultipleImageUploader
+                onUpload={handleMultiplePortfolioUpload}
                 folderName="portfolio"
               />
             </div>
-            <h3>Existing Portfolio Items</h3>
-            <div className="items-grid">
-              {portfolioItems.map((item) => (
-                <div key={item.id} className="item-card">
-                  <img src={item.imageUrl} alt={item.title} />
-                  <p>{item.title}</p>
-                  <span>{item.categoryName}</span>
-                  <button
-                    onClick={() => handleDeletePortfolioItem(item.id)}
-                    className="delete-btn"
-                  >
-                    Delete
-                  </button>
-                </div>
-              ))}
-            </div>
+
+            <h3>Existing Portfolio Items ({portfolioItems.length})</h3>
+            {/* ... existing items grid JSX ... */}
           </div>
         );
       case "categories":
@@ -347,22 +404,21 @@ const AdminDashboard = () => {
           <div className="tab-content">
             <h3>Manage Featured Slider Images (Max 5)</h3>
             <p>
-              These are the images that appear in the large slider at the top of
-              your full portfolio page.
+              Upload images for the top slider. You will be asked to crop them
+              to a 16:9 aspect ratio.
             </p>
 
             {featuredImages.length < 5 ? (
               <div className="form-section">
-                <ImageUploader
+                {/* Use the new CropperUploader component here */}
+                <CropperUploader
                   onUpload={handleFeaturedUpload}
                   folderName="featured"
-                  className="featured-uploader"
                 />
               </div>
             ) : (
               <p className="limit-reached-message">
-                You have reached the 5 image limit. Delete an image to add a new
-                one.
+                You have reached the 5 image limit.
               </p>
             )}
 
@@ -397,14 +453,12 @@ const AdminDashboard = () => {
           </button>
         </div>
         <div className="dashboard-nav">
-          {/* ADD THIS NEW BUTTON */}
           <button
             onClick={() => setActiveTab("featured")}
             className={activeTab === "featured" ? "active" : ""}
           >
             Featured Slider
           </button>
-
           <button
             onClick={() => setActiveTab("portfolio")}
             className={activeTab === "portfolio" ? "active" : ""}
