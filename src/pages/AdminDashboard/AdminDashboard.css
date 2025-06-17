@@ -1,0 +1,197 @@
+.admin-container {
+  padding-top: 150px;
+}
+
+/* General Dashboard Layout */
+.admin-dashboard {
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+  font-family: sans-serif;
+  background-color: rgb(33, 33, 33);
+  border-radius: 0.2cm;
+}
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+.logout-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Navigation Tabs */
+.dashboard-nav {
+  margin-bottom: 20px;
+  border-bottom: 2px solid #eee;
+  overflow-x: auto; /* Allows tabs to be scrollable on small screens */
+  background-color: rgb(255, 204, 0);
+}
+.dashboard-nav button {
+  background: none;
+  border: none;
+  padding: 15px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap; /* Prevents tab text from wrapping */
+}
+.dashboard-nav button.active {
+  border-bottom-color: #007bff;
+  color: #007bff;
+  font-weight: bold;
+}
+
+/* Tab Content */
+.tab-content h3 {
+  margin-top: 0;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+
+.form-section {
+  display: flex;
+  flex-direction: column; /* MOBILE FIRST: Stack elements vertically by default */
+  align-items: stretch; /* Make inputs take the full container width */
+  gap: 15px; /* Add some vertical space between stacked elements */
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+.form-section input[type="text"],
+.form-section select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  /* width: 100%; /* No need for width if align-items is stretch */
+}
+
+.form-section button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* On screens 768px wide or larger (tablets and desktops), switch to a row layout */
+@media (min-width: 768px) {
+  .form-section {
+    flex-direction: row; /* Align main form items horizontally on desktop */
+    align-items: center;
+  }
+
+  /* The portfolio uploader specifically will be a row and take up remaining space */
+  .portfolio-uploader {
+    flex-direction: row; /* Make the file input and button horizontal */
+    flex-grow: 1;        /* Allow it to take up available space */
+    justify-content: flex-end; /* Align to the right */
+  }
+}
+/* ==================================================================== */
+
+/* Image Uploader Component */
+.image-uploader input[type="file"] {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+}
+
+/* Grid for Items (This CSS is already responsive!) */
+.items-grid {
+  display: grid;
+  /* On small phones, show 2 columns instead of just one if they fit */
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+/* On larger screens, the items can be wider */
+@media (min-width: 768px) {
+  .items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+}
+
+.item-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.item-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+.item-card p {
+  font-weight: bold;
+  margin: 0 0 5px;
+}
+.item-card span {
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 10px;
+}
+.delete-btn {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* Category List */
+.category-list {
+  list-style: none;
+  padding: 0;
+}
+.category-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.delete-btn-small {
+  background: none;
+  border: none;
+  color: #ff4d4d;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Site Image Manager */
+.site-image-manager {
+  padding: 20px 0;
+}
+.limit-reached-message {
+  font-weight: 600;
+  color: #856404; /* A warning yellow text color */
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  padding: 1rem 1.25rem;
+  border-radius: 0.25rem;
+  text-align: center;
+  margin-bottom: 30px;
+}

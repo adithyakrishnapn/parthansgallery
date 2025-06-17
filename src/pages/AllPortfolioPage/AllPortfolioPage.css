@@ -1,0 +1,178 @@
+/* --- Main Page Theme --- */
+.all-portfolio-page {
+  background-color: #0d0d0d;
+  color: #e0e0e0;
+  padding-bottom: 60px;
+  min-height: 100vh;
+}
+
+/* --- Top Image Slider Styles --- */
+.portfolio-slider-container {
+  height: 70vh; /* A taller slider for more impact */
+  width: 100%;
+}
+.portfolio-hero-swiper {
+  height: 100%;
+  width: 100%;
+}
+.portfolio-hero-swiper .swiper-slide {
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.portfolio-hero-swiper .swiper-slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.6) 100%);
+}
+.portfolio-hero-swiper .slide-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #fff;
+}
+.portfolio-hero-swiper .slide-content h2 {
+  font-size: 4rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+}
+
+@media (max-width: 768px) {
+  .portfolio-hero-swiper .slide-content h2 {
+    font-size: 2.5rem;
+  }
+}
+/* Swiper Controls Theming */
+.portfolio-hero-swiper .swiper-button-next,
+.portfolio-hero-swiper .swiper-button-prev {
+  color: #FFC107;
+  transform: scale(0.8);
+  transition: transform 0.2s ease;
+}
+.portfolio-hero-swiper:hover .swiper-button-next,
+.portfolio-hero-swiper:hover .swiper-button-prev {
+  transform: scale(1);
+}
+.portfolio-hero-swiper .swiper-pagination-bullet {
+  background: rgba(255, 255, 255, 0.7);
+  width: 10px;
+  height: 10px;
+}
+.portfolio-hero-swiper .swiper-pagination-bullet-active {
+  background: #FFC107;
+}
+
+/* --- Main Portfolio Section Below Slider --- */
+.all-portfolio-page #full-portfolio {
+  padding-top: 80px; /* Space between slider and grid */
+}
+/* Section Title */
+.all-portfolio-page .section-title .description-title {
+  color: #FFC107;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.all-portfolio-page .section-title h2 {
+  color: #ffffff;
+}
+.all-portfolio-page .section-title p {
+  color: #a0a0a0;
+}
+
+/* --- Filter Buttons --- */
+.all-portfolio-page .portfolio-filters {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0 15px 20px 15px;
+  margin-bottom: 20px;
+}
+.all-portfolio-page .portfolio-filters li {
+  cursor: pointer;
+  padding: 10px 20px;
+  margin: 0 5px 10px 5px;
+  color: #a0a0a0;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 15px;
+  border: 1px solid #444;
+  border-radius: 50px;
+}
+.all-portfolio-page .portfolio-filters li:hover {
+  color: #FFC107;
+  border-color: #FFC107;
+}
+.all-portfolio-page .portfolio-filters li.filter-active {
+  color: #121212;
+  background-color: #FFC107;
+  border-color: #FFC107;
+}
+
+/* --- Portfolio Item --- */
+.all-portfolio-page .portfolio-item {
+  overflow: hidden;
+}
+.all-portfolio-page .portfolio-item img {
+  transition: transform 0.4s ease-in-out;
+}
+.all-portfolio-page .portfolio-item:hover img {
+  transform: scale(1.1);
+}
+.all-portfolio-page .portfolio-info {
+  background: rgba(0, 0, 0, 0.75);
+  transition: opacity 0.4s ease-in-out;
+}
+.all-portfolio-page .portfolio-info a {
+  color: rgba(255, 255, 255, 0.8);
+  transition: color 0.3s;
+}
+.all-portfolio-page .portfolio-info a:hover {
+  color: #FFC107;
+}
+
+/* --- Back Button --- */
+.all-portfolio-page .back-to-home-btn {
+  display: inline-block;
+  background: transparent;
+  color: #a0a0a0;
+  padding: 12px 30px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 500;
+  border: 2px solid #a0a0a0;
+  transition: all 0.3s ease-in-out;
+}
+.all-portfolio-page .back-to-home-btn:hover {
+  background: #FFC107;
+  color: #121212;
+  border-color: #FFC107;
+}
+
+/* --- Loading Spinner --- */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 40vh;
+  color: #e0e0e0;
+}
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #a0a0a0;
+  border-top-color: #FFC107;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }

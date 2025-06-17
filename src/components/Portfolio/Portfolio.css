@@ -1,0 +1,29 @@
+/* src/App.css */
+
+.view-more-btn {
+  display: inline-block;
+  background: #ffcc00;
+  color: #000000;
+  padding: 12px 30px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease-in-out;
+}
+
+.view-more-btn:hover {
+  background: #000000;
+  color: #ffcc00;
+  border-color: #ffcc00;
+}
+
+.view-more-btn i {
+  margin-left: 5px;
+  transition: transform 0.3s ease;
+}
+
+.view-more-btn:hover i {
+  transform: translateX(5px);
+}
