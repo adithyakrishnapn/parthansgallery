@@ -9,6 +9,7 @@ import {
   addDoc,
   deleteDoc,
   setDoc,
+  writeBatch
 } from "firebase/firestore";
 import { db, auth } from "../../config/firebaseconfig";
 import { signOut } from "firebase/auth";
@@ -159,46 +160,50 @@ const AdminDashboard = () => {
   };
 
   // Portfolio Handlers - Updated for multiple images
-  const handleMultiplePortfolioUpload = async (cloudinaryResponses) => {
-    if (!selectedCategoryId) {
-      alert("Please select a category.");
-      return;
-    }
+      const handleMultiplePortfolioUpload = async (cloudinaryResponses) => {
+        if (!selectedCategoryId) {
+            alert("Please select a category.");
+            return;
+        }
 
-    const selectedCategory = categories.find(
-      (c) => c.id === selectedCategoryId
-    );
+        const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
 
-    try {
-      // Using a Firestore batch write for efficiency
-      const batch = writeBatch(db);
+        try {
+            // Create a new batch instance
+            const batch = writeBatch(db);
 
-      cloudinaryResponses.forEach((response, index) => {
-        const newDocRef = doc(collection(db, "portfolio"));
-        const title = useAutoTitles
-          ? `Image ${portfolioItems.length + index + 1}`
-          : portfolioTitle || `Image ${portfolioItems.length + index + 1}`;
+            cloudinaryResponses.forEach((response, index) => {
+                // Create a reference for a new, empty document in the 'portfolio' collection
+                const newDocRef = doc(collection(db, "portfolio"));
 
-        batch.set(newDocRef, {
-          title: title,
-          categoryId: selectedCategoryId,
-          categoryName: selectedCategory.name,
-          imageUrl: response.secure_url,
-          publicId: response.public_id,
-          createdAt: new Date(),
-        });
-      });
+                // Determine the title for the image
+                const title = useAutoTitles
+                    ? `Image ${portfolioItems.length + index + 1}`
+                    : portfolioTitle || `Image ${portfolioItems.length + index + 1}`;
+                
+                // Set the data for the new document within the batch
+                batch.set(newDocRef, {
+                    title: title,
+                    categoryId: selectedCategoryId,
+                    categoryName: selectedCategory.name,
+                    imageUrl: response.secure_url,
+                    publicId: response.public_id,
+                    createdAt: new Date(),
+                });
+            });
 
-      await batch.commit();
-      setPortfolioTitle("");
-      alert(
-        `Successfully uploaded and saved ${cloudinaryResponses.length} images!`
-      );
-    } catch (error) {
-      console.error("Error saving portfolio items in batch:", error);
-      alert("Error saving portfolio items. Please try again.");
-    }
-  };
+            // Commit the batch to Firestore. This performs all writes in one operation.
+            await batch.commit();
+
+            // Reset form and give feedback
+            setPortfolioTitle("");
+            alert(`Successfully uploaded and saved ${cloudinaryResponses.length} images!`);
+
+        } catch (error) {
+            console.error("Error saving portfolio items in batch:", error);
+            alert("Error saving portfolio items. Please check the console for details.");
+        }
+    };
 
   // Single image upload handler
   const handlePortfolioUpload = async (cloudinaryResponse) => {
