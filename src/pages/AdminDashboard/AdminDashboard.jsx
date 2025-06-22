@@ -178,8 +178,8 @@ const AdminDashboard = () => {
 
                 // Determine the title for the image
                 const title = useAutoTitles
-                    ? `Image ${portfolioItems.length + index + 1}`
-                    : portfolioTitle || `Image ${portfolioItems.length + index + 1}`;
+                    ? `${selectedCategory.name} - Image ${portfolioItems.length + index + 1}`
+                    : portfolioTitle || `${selectedCategory.name} - Image ${portfolioItems.length + index + 1}`;
                 
                 // Set the data for the new document within the batch
                 batch.set(newDocRef, {
@@ -212,13 +212,13 @@ const AdminDashboard = () => {
       return;
     }
 
-    const title = useAutoTitles
-      ? `Image ${portfolioItems.length + 1}`
-      : portfolioTitle || `Image ${portfolioItems.length + 1}`;
-
     const selectedCategory = categories.find(
       (c) => c.id === selectedCategoryId
     );
+
+    const title = useAutoTitles
+      ? `${selectedCategory.name} - Image ${portfolioItems.length + 1}`
+      : portfolioTitle || `${selectedCategory.name} - Image ${portfolioItems.length + 1}`;
 
     await addDoc(collection(db, "portfolio"), {
       title: title,
@@ -235,6 +235,8 @@ const AdminDashboard = () => {
     if (
       window.confirm("Are you sure you want to delete this portfolio item?")
     ) {
+      // Note: This only deletes the Firestore record.
+      // You might want to also delete the image from Cloudinary here.
       await deleteDoc(doc(db, "portfolio", id));
     }
   };
@@ -333,8 +335,28 @@ const AdminDashboard = () => {
               />
             </div>
 
+            <hr/>
+
             <h3>Existing Portfolio Items ({portfolioItems.length})</h3>
-            {/* ... existing items grid JSX ... */}
+            {/* --- FIX STARTS HERE --- */}
+            <div className="items-grid">
+              {portfolioItems.map((item) => (
+                <div key={item.id} className="item-card">
+                  <img src={item.imageUrl} alt={item.title} />
+                  <div className="item-card-info">
+                    <p>{item.title}</p>
+                    <small>Category: {item.categoryName}</small>
+                  </div>
+                  <button
+                    onClick={() => handleDeletePortfolioItem(item.id)}
+                    className="delete-btn"
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+            {/* --- FIX ENDS HERE --- */}
           </div>
         );
       case "categories":
