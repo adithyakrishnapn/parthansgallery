@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Isotope from 'isotope-layout';
 import imagesLoaded from 'imagesloaded';
-import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
-import { db }  from '../../config/firebaseconfig';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { db } from '../../config/firebaseconfig';
 import { Link } from 'react-router-dom';
 import GLightbox from 'glightbox';
 import 'glightbox/dist/css/glightbox.min.css';
@@ -11,6 +11,7 @@ import './Portfolio.css';
 
 const Portfolio = () => {
     const [portfolioItems, setPortfolioItems] = useState([]);
+    const [allPortfolioItems, setAllPortfolioItems] = useState([]); // Store all items
     const [categories, setCategories] = useState([]);
     const [activeFilter, setActiveFilter] = useState('*');
     const [loading, setLoading] = useState(true);
@@ -18,68 +19,166 @@ const Portfolio = () => {
     const isotopeContainer = useRef(null);
     const isotope = useRef(null);
 
+    // --- Data Fetching Effect (Similar to AllPortfolioPage) ---
     useEffect(() => {
+        // 1. Fetch Categories for filter buttons
         const categoriesQuery = query(collection(db, "categories"), orderBy("name"));
-        const unsubscribe = onSnapshot(categoriesQuery, (snapshot) => {
+        const unsubCategories = onSnapshot(categoriesQuery, (snapshot) => {
             const fetchedCategories = snapshot.docs.map(doc => {
                 const name = doc.data().name;
-                const key = `.filter-${name.toLowerCase().replace(/\s+/g, '-')}`;
-                return { name, key };
+                return { name, key: name };
             });
             setCategories([{ name: 'All', key: '*' }, ...fetchedCategories]);
         });
-        return () => unsubscribe();
-    }, []);
 
-    useEffect(() => {
-        setLoading(true);
-        const portfolioCollectionRef = collection(db, 'portfolio');
-        const portfolioQuery = query(
-            portfolioCollectionRef,
-            orderBy('createdAt', 'desc'),
-            limit(12)
-        );
-        const unsubscribe = onSnapshot(portfolioQuery, (snapshot) => {
-            const fetchedItems = snapshot.docs.map(doc => {
+        // 2. Fetch ALL Portfolio Items (like AllPortfolioPage)
+        const portfolioQuery = query(collection(db, 'portfolio'), orderBy('createdAt', 'desc'));
+        const unsubPortfolio = onSnapshot(portfolioQuery, (snapshot) => {
+            const allItems = snapshot.docs.map(doc => {
                 const data = doc.data();
                 const filterClass = `filter-${data.categoryName.toLowerCase().replace(/\s+/g, '-')}`;
                 return { id: doc.id, ...data, filterClass };
             });
-            setPortfolioItems(fetchedItems);
+            
+            setAllPortfolioItems(allItems);
+            
+            // Generate initial selection based on current filter
+            const selectedItems = getFilteredItems(allItems, activeFilter);
+            setPortfolioItems(selectedItems);
             setLoading(false);
         });
-        return () => unsubscribe();
+
+        // Cleanup listeners on component unmount
+        return () => {
+            unsubCategories();
+            unsubPortfolio();
+        };
     }, []);
 
-    useEffect(() => {
-        if (!loading && portfolioItems.length > 0) {
+    // Function to get items based on current filter
+    const getFilteredItems = (allItems, filter) => {
+        if (allItems.length === 0) return [];
+        
+        if (filter === '*') {
+            // For "All" filter, show balanced selection of 12 items
+            return getBalancedSelection(allItems);
+        } else {
+            // For specific categories, show up to 12 items from that category
+            const categoryItems = allItems.filter(item => item.categoryName === filter);
+            return categoryItems.slice(0, 12);
+        }
+    };
+
+    // Function to get balanced selection of items (max 12, distributed across categories)
+    const getBalancedSelection = (allItems) => {
+        const maxTotal = 12;
+        const maxPerCategory = 3;
+        
+        // Group items by category
+        const itemsByCategory = {};
+        allItems.forEach(item => {
+            if (!itemsByCategory[item.categoryName]) {
+                itemsByCategory[item.categoryName] = [];
+            }
+            itemsByCategory[item.categoryName].push(item);
+        });
+        
+        const selectedItems = [];
+        const categories = Object.keys(itemsByCategory);
+        
+        // First pass: Take 1 item from each category
+        categories.forEach(category => {
+            if (selectedItems.length < maxTotal && itemsByCategory[category].length > 0) {
+                selectedItems.push(itemsByCategory[category].shift());
+            }
+        });
+        
+        // Second pass: Fill remaining slots, respecting maxPerCategory limit
+        let categoryIndex = 0;
+        while (selectedItems.length < maxTotal) {
+            let addedItem = false;
             
-            // Wait for images to load before initializing Isotope
+            for (let i = 0; i < categories.length && selectedItems.length < maxTotal; i++) {
+                const category = categories[categoryIndex % categories.length];
+                const categoryItems = itemsByCategory[category];
+                
+                // Count current items from this category
+                const currentCount = selectedItems.filter(item => item.categoryName === category).length;
+                
+                if (categoryItems.length > 0 && currentCount < maxPerCategory) {
+                    selectedItems.push(categoryItems.shift());
+                    addedItem = true;
+                }
+                categoryIndex++;
+            }
+            
+            // Break if no items were added (avoid infinite loop)
+            if (!addedItem) break;
+        }
+        
+        // Shuffle for random display
+        return selectedItems.sort(() => Math.random() - 0.5);
+    };
+
+    // --- Library Initialization Effect (Similar to AllPortfolioPage) ---
+    useEffect(() => {
+        if (!loading && portfolioItems.length > 0 && isotopeContainer.current) {
             imagesLoaded(isotopeContainer.current, () => {
+                if (isotope.current) isotope.current.destroy();
                 isotope.current = new Isotope(isotopeContainer.current, {
                     itemSelector: '.portfolio-item',
                     layoutMode: 'masonry',
                 });
             });
 
-            const lightbox = GLightbox({
-                selector: '.glightbox' // It will now find the dynamically rendered links
+            const lightbox = GLightbox({ 
+                selector: '.portfolio-item .glightbox',
+                data: 'gallery="portfolio-gallery"'
             });
-
             return () => {
-                if (isotope.current) {
-                    isotope.current.destroy();
-                }
-                lightbox.destroy(); // Destroy the GLightbox instance to prevent memory leaks
+                if (isotope.current) isotope.current.destroy();
+                lightbox.destroy();
             };
         }
-    }, [loading, portfolioItems]); // This effect runs when content is loaded
+    }, [loading, portfolioItems]);
 
+    // --- Filtering Effect ---
+    useEffect(() => {
+        if (allPortfolioItems.length > 0) {
+            // Update portfolio items based on filter
+            const filteredItems = getFilteredItems(allPortfolioItems, activeFilter);
+            setPortfolioItems(filteredItems);
+        }
+    }, [activeFilter, allPortfolioItems]);
+
+    // --- Isotope Layout Effect ---
     useEffect(() => {
         if (isotope.current) {
-            isotope.current.arrange({ filter: activeFilter });
+            // Since we're changing the actual items, we need to reload isotope
+            setTimeout(() => {
+                if (isotope.current) {
+                    isotope.current.reloadItems();
+                    isotope.current.layout();
+                }
+            }, 100);
         }
-    }, [activeFilter]);
+    }, [portfolioItems]);
+
+    const handleFilterClick = (filterKey) => {
+        setActiveFilter(filterKey);
+    };
+
+    if (loading) {
+        return (
+            <section id="portfolio" className="portfolio section">
+                <div className="container section-title" data-aos="fade-up">
+                    <span className="description-title">Portfolio</span>
+                    <h2>Portfolio</h2>
+                    <p>Loading portfolio items...</p>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section id="portfolio" className="portfolio section">
@@ -95,8 +194,9 @@ const Portfolio = () => {
                         {categories.map(cat => (
                             <li
                                 key={cat.key}
-                                onClick={() => setActiveFilter(cat.key)}
+                                onClick={() => handleFilterClick(cat.key)}
                                 className={activeFilter === cat.key ? 'filter-active' : ''}
+                                style={{ cursor: 'pointer' }}
                             >
                                 {cat.name}
                             </li>
@@ -105,15 +205,24 @@ const Portfolio = () => {
 
                     <div ref={isotopeContainer} className="row g-0 isotope-container" data-aos="fade-up" data-aos-delay="200">
                         {portfolioItems.map(item => (
-                            <div key={item.id} className={`col-xl-3 col-lg-4 col-md-6 portfolio-item isotope-item ${item.filterClass}`}>
+                            <div 
+                                key={item.id} 
+                                className={`col-xl-3 col-lg-4 col-md-6 portfolio-item isotope-item ${item.filterClass}`}
+                            >
                                 <div className="portfolio-content h-100">
-                                    <img src={item.imageUrl} className="img-fluid" alt={item.title} />
+                                    <img 
+                                        src={item.imageUrl} 
+                                        className="img-fluid" 
+                                        alt={item.title || `Portfolio image ${item.id}`}
+                                        loading="lazy"
+                                    />
                                     <div className="portfolio-info">
-                                        <a href={item.imageUrl} data-gallery="portfolio-gallery" className="glightbox preview-link">
+                                        <a 
+                                            href={item.imageUrl} 
+                                            data-gallery="portfolio-gallery" 
+                                            className="glightbox preview-link"
+                                        >
                                             <i className="bi bi-zoom-in"></i>
-                                        </a>
-                                        <a href="#" title="More Details" className="details-link">
-                                            <i className="bi bi-link-45deg"></i>
                                         </a>
                                     </div>
                                 </div>

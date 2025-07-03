@@ -1,35 +1,36 @@
-import React, { useRef, useState } from 'react';
-import emailjs from '@emailjs/browser';
+import React, { useRef, useState } from "react";
+import emailjs from "@emailjs/browser";
 
 const ContactForm = () => {
   const form = useRef();
   const [isSending, setIsSending] = useState(false);
-  const [sentMessage, setSentMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [sentMessage, setSentMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const sendEmail = (e) => {
     e.preventDefault();
     setIsSending(true);
-    setSentMessage('');
-    setErrorMessage('');
+    setSentMessage("");
+    setErrorMessage("");
 
     emailjs
       .sendForm(
-        'YOUR_SERVICE_ID',
-        'YOUR_TEMPLATE_ID',
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
         form.current,
-        'YOUR_PUBLIC_KEY'
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
       )
+
       .then(
         (result) => {
           console.log(result.text);
-          setSentMessage('Your message has been sent. Thank you!');
+          setSentMessage("Your message has been sent. Thank you!");
           setIsSending(false);
           form.current.reset();
         },
         (error) => {
           console.log(error.text);
-          setErrorMessage('Failed to send message. Please try again.');
+          setErrorMessage("Failed to send message. Please try again.");
           setIsSending(false);
         }
       );
@@ -90,7 +91,7 @@ const ContactForm = () => {
           {sentMessage && <div className="sent-message">{sentMessage}</div>}
 
           <button type="submit" disabled={isSending}>
-            {isSending ? 'Sending...' : 'Send Message'}
+            {isSending ? "Sending..." : "Send Message"}
           </button>
         </div>
       </div>

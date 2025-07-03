@@ -40,17 +40,17 @@ const About = () => {
 
     // Default content in case it's not set in Firestore yet
     const content = aboutInfo || {
-        title: "UI/UX Designer & Web Developer.",
+        title: "Photography, Video, and Design",
         italicIntro: "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-        birthday: "1 May 1995",
-        website: "www.example.com",
-        phone: "+123 456 7890",
-        city: "New York, USA",
-        age: "30",
-        degree: "Master",
-        email: "email@example.com",
+        birthday: "14 May 2003",
+        website: "www.parthansgallery.studio",
+        // phone: "+123 456 7890",
+        city: "Kerala, INDIA",
+        // age: "30",
+        degree: "Bachelors",
+        email: "parthansgallery@gmail.com",
         freelance: "Available",
-        mainParagraph: "Officiis eligendi itaque labore et dolorum mollitia officiis optio vero..."
+        mainParagraph: "I'm a passionate and growing photographer and videographer with a sharp eye for detail and a deep love for visual storytelling. Whether it's capturing the raw emotion of a candid moment or crafting the perfect frame in motion, I bring creativity, dedication, and originality to every project. From portraits and events to cinematic edits, I aim to create work that reflects not just what is seen—but what is truly felt."
     };
 
     return (
@@ -58,7 +58,7 @@ const About = () => {
             <div className="container section-title" data-aos="fade-up">
                 <span className="description-title">About me</span>
                 <h2>About Me</h2>
-                <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+                <p>Capturing moments, telling stories.</p>
             </div>
 
             <div className="container" data-aos="fade-up" data-aos-delay="100">
@@ -78,13 +78,13 @@ const About = () => {
                                 <ul>
                                     <li><i className="bi bi-chevron-right"></i> <strong>Birthday:</strong> <span>{content.birthday}</span></li>
                                     <li><i className="bi bi-chevron-right"></i> <strong>Website:</strong> <span>{content.website}</span></li>
-                                    <li><i className="bi bi-chevron-right"></i> <strong>Phone:</strong> <span>{content.phone}</span></li>
+                                    {/* <li><i className="bi bi-chevron-right"></i> <strong>Phone:</strong> <span>{content.phone}</span></li> */}
                                     <li><i className="bi bi-chevron-right"></i> <strong>City:</strong> <span>{content.city}</span></li>
                                 </ul>
                             </div>
                             <div className="col-lg-6">
                                 <ul>
-                                    <li><i className="bi bi-chevron-right"></i> <strong>Age:</strong> <span>{content.age}</span></li>
+                                    {/* <li><i className="bi bi-chevron-right"></i> <strong>Age:</strong> <span>{content.age}</span></li> */}
                                     <li><i className="bi bi-chevron-right"></i> <strong>Degree:</strong> <span>{content.degree}</span></li>
                                     <li><i className="bi bi-chevron-right"></i> <strong>Email:</strong> <span>{content.email}</span></li>
                                     <li><i className="bi bi-chevron-right"></i> <strong>Freelance:</strong> <span>{content.freelance}</span></li>

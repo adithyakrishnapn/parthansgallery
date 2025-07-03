@@ -24,7 +24,7 @@ const Landing = () => {
         // Cleanup the listener when the component unmounts
         return () => unsubscribe();
     }, []); 
-    const imageUrl = dynamicImageUrl || staticHeroImage;
+    const imageUrl = dynamicImageUrl;
 
     return (
         <section id="hero" className="hero section dark-background">
@@ -32,8 +32,8 @@ const Landing = () => {
             <img src={imageUrl} alt="Hero background" data-aos="fade-in" />
 
             <div className="container text-center" data-aos="fade-up" data-aos-delay="100">
-                <h2>Laura Thomson</h2>
-                <p>I'M A PROFESSIONAL PHOTOGRAPHER IN NEW YORK CITY</p>
+                <h2>Parthan C</h2>
+                <p>I'M A PROFESSIONAL PHOTOGRAPHER IN KERALA</p>
                 <a href="#about" className="btn-scroll" title="Scroll Down">
                     <i className="bi bi-chevron-down"></i>
                 </a>

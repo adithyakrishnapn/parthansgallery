@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-
+import './Header.css'; 
 // This is now our master list of all possible links for the homepage
 const homepageNavLinks = [
     { href: '/#hero', text: 'Home', type: 'hash' },
@@ -106,7 +106,7 @@ const Header = () => {
         <header id="header" className={`header d-flex align-items-center fixed-top ${isScrolled ? 'scrolled' : ''}`}>
             <div className="container-fluid position-relative d-flex align-items-center justify-content-between">
                 <Link to="/" className="logo d-flex align-items-center me-auto me-xl-0">
-                    <h1 className="sitename">Laura</h1>
+                    <h1 className="sitename">parthansgallery</h1>
                 </Link>
 
                 <nav id="navmenu" className={`navmenu ${isMobileNavOpen ? 'navmenu-active' : ''}`}>

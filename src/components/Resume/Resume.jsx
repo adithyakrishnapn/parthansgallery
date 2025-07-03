@@ -2,28 +2,22 @@ import React from 'react';
 
 
 const summary = {
-    name: 'Brandon Johnson',
+    name: 'Parthan C',
     description: 'Innovative and deadline-driven Graphic Designer with 3+ years of experience...',
     details: [
-        'Portland par 127, Orlando, FL',
-        '(123) 456-7891',
-        'alice.barkley@example.com'
+        'Wayanad, Kerala, India',
+        // '(123) 456-7891',
+        'parthansgallery@gmail.com'
     ]
 };
 
 const education = [
     {
-        degree: 'Master of Fine Arts & Graphic Design',
-        period: '2015 - 2016',
-        institution: 'Rochester Institute of Technology, Rochester, NY',
-        description: 'Qui deserunt veniam. Et sed aliquam labore tempore sed quisquam iusto autem sit...'
+        degree: ' BCA Artificial Intelligence,Machine Learning,Robotics',
+        period: '2022 - 2025',
+        institution: 'Yenepoya University, Mangalore, India',
+        description: 'Bachelor of Computer Applications in Artificial Intelligence, Machine Learning, and Robotics. This program focuses on the integration of AI and ML technologies with robotics systems, preparing students for careers in these rapidly evolving fields.'
     },
-    {
-        degree: 'Bachelor of Fine Arts & Graphic Design',
-        period: '2010 - 2014',
-        institution: 'Rochester Institute of Technology, Rochester, NY',
-        description: 'Quia nobis sequi est occaecati aut. Repudiandae et iusto quae reiciendis...'
-    }
 ];
 
 const experience = [

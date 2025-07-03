@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Landing from "../../components/Landing/Landing";
 import About from "../../components/About/About";
 import Resume from "../../components/Resume/Resume";
@@ -10,6 +10,10 @@ import Gallery from "../../components/Gallery/Gallery";
 import Contact from "../../components/Contact/Contact";
 
 const Home = () => {
+
+  useEffect(() => {
+            window.scrollTo(0, 0);
+  }, []);
   return (
 
       <div className="main">
@@ -18,9 +22,9 @@ const Home = () => {
         <Resume />
         <Gallery />
         <Service />
-        <Testimonials />
+        {/* <Testimonials /> */}
         <Portfolio />
-        <Pricing />
+        {/* <Pricing /> */}
         <Contact />
       </div>
   );

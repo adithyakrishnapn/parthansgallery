@@ -10,7 +10,7 @@ import GLightbox from 'glightbox';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectFade, Navigation, Pagination } from 'swiper/modules';
 
-// --- All Necessary CSS Imports ---
+// --- CSS Imports ---
 import './AllPortfolioPage.css';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
@@ -19,51 +19,46 @@ import 'swiper/css/pagination';
 import 'glightbox/dist/css/glightbox.min.css';
 
 const AllPortfolioPage = () => {
-    // --- State Management ---
+    const [allPortfolioItems, setAllPortfolioItems] = useState([]);
     const [portfolioItems, setPortfolioItems] = useState([]);
     const [categories, setCategories] = useState([]);
     const [sliderImages, setSliderImages] = useState([]);
     const [activeFilter, setActiveFilter] = useState('*');
     const [loading, setLoading] = useState(true);
 
-    // Ref for the Isotope grid container
     const isotopeContainer = useRef(null);
     const isotope = useRef(null);
 
-    // --- Data Fetching Effect ---
+    // Fetch categories, slider, and portfolio items
     useEffect(() => {
-        // 1. Fetch Categories for filter buttons
         const categoriesQuery = query(collection(db, "categories"), orderBy("name"));
         const unsubCategories = onSnapshot(categoriesQuery, (snapshot) => {
-            const fetchedCategories = snapshot.docs.map(doc => {
+            const fetched = snapshot.docs.map(doc => {
                 const name = doc.data().name;
-                const key = `.filter-${name.toLowerCase().replace(/\s+/g, '-')}`;
-                return { name, key };
+                return { name, key: `filter-${name.toLowerCase().replace(/\s+/g, '-')}` };
             });
-            setCategories([{ name: 'All', key: '*' }, ...fetchedCategories]);
+            setCategories([{ name: 'All', key: '*' }, ...fetched]);
         });
 
-        // 2. Fetch Featured Images for the top slider
         const featuredQuery = query(collection(db, "featuredImages"), orderBy("createdAt", "asc"));
         const unsubFeatured = onSnapshot(featuredQuery, (snapshot) => {
             setSliderImages(snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })));
         });
 
-        // 3. Fetch ALL Portfolio Items for the main grid
         const portfolioQuery = query(collection(db, 'portfolio'), orderBy('createdAt', 'desc'));
         const unsubPortfolio = onSnapshot(portfolioQuery, (snapshot) => {
-            const fetchedItems = snapshot.docs.map(doc => {
+            const allItems = snapshot.docs.map(doc => {
                 const data = doc.data();
                 const filterClass = `filter-${data.categoryName.toLowerCase().replace(/\s+/g, '-')}`;
                 return { id: doc.id, ...data, filterClass };
             });
-            setPortfolioItems(fetchedItems);
-            setLoading(false); // We are done loading after the main content is fetched
+            setAllPortfolioItems(allItems);
+            setPortfolioItems(allItems);
+            setLoading(false);
         });
 
-        // This command instantly scrolls the window to the top (x: 0, y: 0)
         window.scrollTo(0, 0);
-        // Cleanup all listeners on component unmount
+
         return () => {
             unsubCategories();
             unsubFeatured();
@@ -71,9 +66,24 @@ const AllPortfolioPage = () => {
         };
     }, []);
 
-    // --- Library Initialization Effect (Isotope & GLightbox) ---
+    // Filter logic
+    const getFilteredItems = (allItems, filter) => {
+        if (filter === '*') return allItems;
+        return allItems.filter(item => item.filterClass === filter);
+    };
+
     useEffect(() => {
-        if (!loading && portfolioItems.length > 0 && isotopeContainer.current) {
+        const filtered = getFilteredItems(allPortfolioItems, activeFilter);
+        setPortfolioItems(filtered);
+
+        if (isotope.current) {
+            isotope.current.arrange({ filter: activeFilter });
+        }
+    }, [activeFilter, allPortfolioItems]);
+
+    // Initialize Isotope + Lightbox
+    useEffect(() => {
+        if (!loading && isotopeContainer.current) {
             imagesLoaded(isotopeContainer.current, () => {
                 if (isotope.current) isotope.current.destroy();
                 isotope.current = new Isotope(isotopeContainer.current, {
@@ -82,7 +92,11 @@ const AllPortfolioPage = () => {
                 });
             });
 
-            const lightbox = GLightbox({ selector: '.portfolio-item .glightbox' });
+            const lightbox = GLightbox({ 
+                selector: '.portfolio-item .glightbox',
+                data: 'gallery="full-portfolio-gallery"'
+            });
+
             return () => {
                 if (isotope.current) isotope.current.destroy();
                 lightbox.destroy();
@@ -90,16 +104,8 @@ const AllPortfolioPage = () => {
         }
     }, [loading, portfolioItems]);
 
-    // --- Filtering Effect ---
-    useEffect(() => {
-        if (isotope.current) {
-            isotope.current.arrange({ filter: activeFilter });
-        }
-    }, [activeFilter]);
-
     return (
         <main className="all-portfolio-page">
-            
             {/* --- TOP IMAGE SLIDER --- */}
             {!loading && sliderImages.length > 0 && (
                 <div className="portfolio-slider-container" data-aos="fade-in">
@@ -124,12 +130,12 @@ const AllPortfolioPage = () => {
                 </div>
             )}
 
-            {/* --- MAIN PORTFOLIO GRID --- */}
+            {/* --- MAIN GRID --- */}
             <section id="full-portfolio" className="portfolio section">
                 <div className="container section-title" data-aos="fade-up">
-                    <span className="description-title">Our Work</span>
+                    <span className="description-title">my Work</span>
                     <h2>Full Portfolio</h2>
-                    <p>Browse our complete collection of projects. Use the filters to find what you're looking for.</p>
+                    <p>Browse my complete collection of projects. Use the filters to find what you're looking for.</p>
                 </div>
 
                 <div className="container-fluid" data-aos="fade-up" data-aos-delay="100">
@@ -142,7 +148,11 @@ const AllPortfolioPage = () => {
                         <div className="isotope-layout">
                             <ul className="portfolio-filters isotope-filters">
                                 {categories.map(cat => (
-                                    <li key={cat.key} onClick={() => setActiveFilter(cat.key)} className={activeFilter === cat.key ? 'filter-active' : ''}>
+                                    <li
+                                        key={cat.key}
+                                        onClick={() => setActiveFilter(cat.key)}
+                                        className={activeFilter === cat.key ? 'filter-active' : ''}
+                                    >
                                         {cat.name}
                                     </li>
                                 ))}
@@ -150,15 +160,25 @@ const AllPortfolioPage = () => {
 
                             <div ref={isotopeContainer} className="row g-0 isotope-container">
                                 {portfolioItems.map(item => (
-                                    <div key={item.id} className={`col-xl-3 col-lg-4 col-md-6 portfolio-item isotope-item ${item.filterClass}`}>
+                                    <div
+                                        key={item.id}
+                                        className={`col-xl-3 col-lg-4 col-md-6 portfolio-item isotope-item ${item.filterClass}`}
+                                    >
                                         <div className="portfolio-content h-100">
-                                            <img src={item.imageUrl} className="img-fluid" alt={item.title} />
+                                            <img
+                                                src={item.imageUrl}
+                                                className="img-fluid"
+                                                alt={item.title || `Portfolio image ${item.id}`}
+                                                loading="lazy"
+                                            />
                                             <div className="portfolio-info">
-                                                <a href={item.imageUrl} data-gallery="full-portfolio-gallery" className="glightbox preview-link">
+                                                <a
+                                                    href={item.imageUrl}
+                                                    data-gallery="full-portfolio-gallery"
+                                                    className="glightbox preview-link"
+                                                    title={item.title || `Portfolio image ${item.id}`}
+                                                >
                                                     <i className="bi bi-zoom-in"></i>
-                                                </a>
-                                                <a href="#" title="More Details" className="details-link">
-                                                    <i className="bi bi-link-45deg"></i>
                                                 </a>
                                             </div>
                                         </div>

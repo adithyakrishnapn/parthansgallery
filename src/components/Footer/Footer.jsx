@@ -2,39 +2,39 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer id="footer" class="footer position-relative dark-background">
-      <div class="container">
-        <h3 class="sitename">
-          Laura Thomson
+    <footer id="footer" className="footer position-relative dark-background">
+      <div className="container">
+        <h3 className="sitename">
+          Parthan C
           <br />
         </h3>
         <p>
           Et aut eum quis fuga eos sunt ipsa nihil. Labore corporis magni
           eligendi fuga maxime saepe commodi placeat.
         </p>
-        <div class="social-links d-flex justify-content-center">
+        <div className="social-links d-flex justify-content-center">
           <a href="">
-            <i class="bi bi-twitter-x"></i>
+            <i className="bi bi-twitter-x"></i>
           </a>
           <a href="">
-            <i class="bi bi-facebook"></i>
+            <i className="bi bi-facebook"></i>
           </a>
           <a href="">
-            <i class="bi bi-instagram"></i>
+            <i className="bi bi-instagram"></i>
           </a>
           <a href="">
-            <i class="bi bi-skype"></i>
+            <i className="bi bi-skype"></i>
           </a>
           <a href="">
-            <i class="bi bi-linkedin"></i>
+            <i className="bi bi-linkedin"></i>
           </a>
         </div>
-        <div class="container">
-          <div class="copyright">
-            <span>Copyright</span> <strong class="px-1 sitename">Laura</strong>{" "}
+        <div className="container">
+          <div className="copyright">
+            <span>Copyright</span> <strong className="px-1 sitename">parthansgallery</strong>{" "}
             <span>All Rights Reserved</span>
           </div>
-          <div class="credits">
+          <div className="credits">
             Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
           </div>
         </div>

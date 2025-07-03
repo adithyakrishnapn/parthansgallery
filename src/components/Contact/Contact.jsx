@@ -15,27 +15,19 @@ const Contact = () => {
 
       <div className="container" data-aos="fade-up" data-aos-delay="100">
         <div className="row gy-4" data-aos="fade-up" data-aos-delay="200">
-          <div className="col-lg-4">
+          <div className="col-lg-6">
             <div className="info-item d-flex flex-column justify-content-center align-items-center">
               <i className="bi bi-geo-alt"></i>
               <h3>Address</h3>
-              <p>A108 Adam Street, New York, NY 535022</p>
+              <p>Wayanad, Kerala, Sulthan Bathery</p>
             </div>
           </div>
 
-          <div className="col-lg-4">
-            <div className="info-item d-flex flex-column justify-content-center align-items-center info-item-borders">
-              <i className="bi bi-telephone"></i>
-              <h3>Call Us</h3>
-              <p>+1 5589 55488 55</p>
-            </div>
-          </div>
-
-          <div className="col-lg-4">
+          <div className="col-lg-6">
             <div className="info-item d-flex flex-column justify-content-center align-items-center">
               <i className="bi bi-envelope"></i>
               <h3>Email Us</h3>
-              <p>info@example.com</p>
+              <p>parthansgallery@gmail.com</p>
             </div>
           </div>
         </div>
